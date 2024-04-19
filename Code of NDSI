@@ -1,0 +1,20 @@
+var aoi = table.filter(ee.Filter.eq("NAME_3", "Manikganj S."))
+print(aoi)
+Map.centerObject(aoi)
+var S2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
+  .filterBounds(aoi) 
+  .filterDate("2021-01-01", "2021-12-31")
+  .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE",5))
+   .first()
+   .select(["B8","B4","B3","B11"])
+print(S2);
+Map.addLayer(S2.clip(aoi), {},"Manikganj S. upzilla")
+
+var ndsi=S2.normalizedDifference(["B3","B11"]).rename("NDSI IMAGE")
+print(ndsi);
+var vizparam ={
+  min: -1,
+  max: 1,
+  palette:["blue","yellow","green"]
+}
+Map.addLayer(ndsi.clip(aoi),vizparam,"NDSI IMAGE")
